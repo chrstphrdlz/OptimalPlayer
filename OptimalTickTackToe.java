@@ -3,25 +3,21 @@ public class OptimalTickTackToe
 {
 	public static void main(String [] args)
 	{
+		if(args.length!=1)
+			return;
 
 		Tile me = Tile.X;
+		int x,y;
+
+		Scanner input = new Scanner(System.in);
 		Tile opponet = Tile.O;
 		TickTackToe game = new TickTackToe();
-		TTTDecisionTree myTree = new TTTDecisionTree(game,Tile.X,0,0);
+		TTTDecisionTree myTree = new TTTDecisionTree(game,Tile.O,0,0);
+		System.out.println(myTree.game);
 		TTTDecisionTree temp;
-		Scanner input = new Scanner(System.in);
-		int x,y;
+		
 		while(myTree.game.Winner()==Tile.Empty)
 		{
-
-			myTree = myTree.makeMaxMove();
-			System.out.println(myTree.game);
-			//System.out.println(myTree.game.Winner());
-			if(myTree.game.Winner()!=Tile.Empty)
-			{
-				System.out.println("Winner is "+myTree.game.Winner());
-				return;
-			}
 			x = input.nextInt();
 			y = input.nextInt();
 			temp = myTree.makeMove(x,y,Tile.X);
@@ -35,7 +31,23 @@ public class OptimalTickTackToe
 
 			myTree = temp;
 
+			if(myTree.game.Winner()!=Tile.Empty)
+			{
+				System.out.println("Winner is "+myTree.game.Winner());
+				return;
+			}
+
 			System.out.println(myTree.game);
+
+
+			myTree = myTree.makeMaxMove();
+			System.out.println(myTree.game);
+			//System.out.println(myTree.game.Winner());
+			if(myTree.game.Winner()!=Tile.Empty)
+			{
+				System.out.println("Winner is "+myTree.game.Winner());
+				return;
+			}
 		}
 		//System.out.println("\n\nwinner"+game.Winner());
 
@@ -247,11 +259,22 @@ class TTTDecisionTree
 		return nextNode[findIndexOfMove(x,y,player)];
 	}
 
+	public boolean losesNextTurn()
+	{
+		int i;
+		if(nextNode.length == 0)
+			return false;
+		for(i=0;i<nextNode.length;i++)
+			if(nextNode[i].winner != Tile.Empty && nextNode[i].winner != Tile.Tie)
+				return true;
+		return false;
+	}
+
 	public int indexOfMaxMove()
 	{
 		int max=-20000,i,index=-1;
 		for(i=0;i<nextNode.length;i++)
-			if(nextNode[i].winLoss>max)
+			if(nextNode[i].winLoss>max && !nextNode[i].losesNextTurn())
 			{
 				max = nextNode[i].winLoss;
 				index = i;
@@ -285,6 +308,7 @@ class TTTDecisionTree
 			if(nextNode[i].currentPlayer == player && nextNode[i].movex == x && nextNode[i].movey == y)
 				return i;
 		System.out.println("Nothing");
+		System.out.println(nextNode.length);
 		return -1;
 	}
 
@@ -297,8 +321,6 @@ class TTTDecisionTree
 		int i,j,indexOfNext = 0;
 		Tile nextPlayer;
 		level = game.getNumMoves();
-		//System.out.println("This level is " + level +"\n");
-		//System.out.println(game);
 		if(!game.outOfTiles())
 		{
 			winner =  game.Winner();
