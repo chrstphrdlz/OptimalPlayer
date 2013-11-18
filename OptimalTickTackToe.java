@@ -1,18 +1,12 @@
 import java.util.Scanner;
 public class OptimalTickTackToe
 {
-	public static void main(String [] args)
+	public static void playAsX()
 	{
-		if(args.length!=1)
-			return;
-
-		Tile me = Tile.X;
 		int x,y;
-
-		Scanner input = new Scanner(System.in);
-		Tile opponet = Tile.O;
+		Scanner input = new Scanner(System.in);	
 		TickTackToe game = new TickTackToe();
-		TTTDecisionTree myTree = new TTTDecisionTree(game,Tile.O,0,0);
+		TTTDecisionTree myTree = new TTTDecisionTree(game,Tile.O,0,0,Tile.O);
 		System.out.println(myTree.game);
 		TTTDecisionTree temp;
 		
@@ -49,6 +43,17 @@ public class OptimalTickTackToe
 				return;
 			}
 		}
+	}
+	public static void main(String [] args)
+	{
+		if(args.length!=1)
+			return;
+
+		Tile me = Tile.X;
+		Tile opponet = Tile.O;			
+
+		playAsX();
+
 		//System.out.println("\n\nwinner"+game.Winner());
 
 	}
@@ -239,6 +244,7 @@ class TTTDecisionTree
 	int movex, movey;
 	Tile currentPlayer;
 	TickTackToe game;
+	Tile playerType;
 	private TTTDecisionTree nextNode[];
 
 	public TTTDecisionTree getNextMove(int x, int y, Tile player)
@@ -262,10 +268,21 @@ class TTTDecisionTree
 	public boolean losesNextTurn()
 	{
 		int i;
-		if(nextNode.length == 0)
+		if(nextNode == null)
+		{
+			System.out.println("NULL");
 			return false;
+		}
+
+		if(nextNode.length == 0)
+		{
+			System.out.println("Length 0");
+			return false;
+		}
+
 		for(i=0;i<nextNode.length;i++)
-			if(nextNode[i].winner != Tile.Empty && nextNode[i].winner != Tile.Tie)
+			if(nextNode[i].winner != Tile.Empty && nextNode[i].winner != Tile.Tie 
+				&& nextNode[i].winner != playerType )
 				return true;
 		return false;
 	}
@@ -273,13 +290,32 @@ class TTTDecisionTree
 	public int indexOfMaxMove()
 	{
 		int max=-20000,i,index=-1;
+		Tile nextPlayer = Tile.Empty;
+		if(currentPlayer==Tile.X)
+		{
+			nextPlayer = Tile.O;
+		}
+		else if(currentPlayer == Tile.O)
+		{
+			nextPlayer = Tile.X;
+		}
+		else
+		{
+			System.out.println("ERROR");
+		}
 		for(i=0;i<nextNode.length;i++)
-			if(nextNode[i].winLoss>max && !nextNode[i].losesNextTurn())
+		{
+
+			//System.out.println(nextNode[i].winner);
+			//System.out.println(currentPlayer);
+			if(nextNode[i].winLoss>max && nextNode[i].winner!=currentPlayer)//!nextNode[i].losesNextTurn())
 			{
 				max = nextNode[i].winLoss;
 				index = i;
+				//System.out.println("Found winner");
 
 			}
+		}
 
 		return index;
 	}
@@ -296,8 +332,8 @@ class TTTDecisionTree
 
 			}
 
-			System.out.println("max x = "+movexmax);
-			System.out.println("max y = "+moveymax);
+			//System.out.println("max x = "+movexmax);
+			//System.out.println("max y = "+moveymax);
 		return max;
 	}
 
@@ -307,13 +343,19 @@ class TTTDecisionTree
 		for(i=0;i<nextNode.length;i++)
 			if(nextNode[i].currentPlayer == player && nextNode[i].movex == x && nextNode[i].movey == y)
 				return i;
-		System.out.println("Nothing");
-		System.out.println(nextNode.length);
+		//System.out.println("Nothing");
+		//System.out.println(nextNode.length);
 		return -1;
 	}
 
-	public TTTDecisionTree(TickTackToe game, Tile player,int movex, int movey)
+	public TTTDecisionTree(TickTackToe game, Tile player)
 	{
+		new TTTDecisionTree(game, player,0,0, player);
+	}
+
+	public TTTDecisionTree(TickTackToe game, Tile player,int movex, int movey, Tile opponetType)
+	{
+		this.playerType = opponetType;
 		this.game = game.copy();
 		currentPlayer = player;
 		this.movex = movex;
@@ -356,16 +398,32 @@ class TTTDecisionTree
 						if(game.canMove(i,j))
 						{
 							game.makeMove(i,j,nextPlayer);
-							this.nextNode[indexOfNext] = new TTTDecisionTree(game,nextPlayer,i,j);
+							this.nextNode[indexOfNext] = new TTTDecisionTree(game,nextPlayer,i,j, opponetType);
+							
 							game.eraseMove(i,j);
 							winLoss+=this.nextNode[indexOfNext].winLoss;
+							if(currentPlayer != playerType)
+							{
+								if(this.nextNode[indexOfNext].winner==nextPlayer)
+									this.winner = nextPlayer;
+								
+							}
+							else
+							{
+								if(this.nextNode[indexOfNext].winner==nextPlayer)
+									this.winner = nextPlayer;
+							}
 							indexOfNext++;
+							//if(this.nextNode[indexOfNext].winner!=Tile.Tie && )
 						}
 					}
+				//for(i=0;i<nextNode.length;i++)
+				//System.out.println(nextNode[i].winner);
 				//System.out.println(maxMove());
 			}
 			else
 			{
+				winner =  game.Winner();
 				winLoss = factorial(9-level)*winner.winVal;
 			}
 		}
