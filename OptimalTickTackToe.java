@@ -6,7 +6,7 @@ public class OptimalTickTackToe
 		int x,y;
 		Scanner input = new Scanner(System.in);	
 		TickTackToe game = new TickTackToe();
-		TTTDecisionTree myTree = new TTTDecisionTree(game,Tile.O,0,0,Tile.O);
+		TTTDecisionTree myTree = new TTTDecisionTree(game,Tile.O);
 		System.out.println(myTree.game);
 		TTTDecisionTree temp;
 		
@@ -62,8 +62,7 @@ public class OptimalTickTackToe
 class TickTackToe
 {
 	private Tile tiles[][];
-	private int numMoves;
-	int weight;
+	private int numMoves;;
 
 	public TickTackToe()
 	{
@@ -73,7 +72,6 @@ class TickTackToe
 		for(i=0;i<3;i++)
 			for(j=0;j<3;j++)
 				tiles[i][j] = Tile.Empty;
-		weight = 0;
 	}
 	public TickTackToe copy()
 	{
@@ -214,7 +212,7 @@ class TickTackToe
 
 enum Tile
 {
-	X(-1),O(1),Empty(-200000),Tie(0);
+	X(-1),O(1),Empty(0),Tie(0);
 	int winVal;
 	private Tile(int a)
 	{
@@ -265,32 +263,12 @@ class TTTDecisionTree
 		return nextNode[findIndexOfMove(x,y,player)];
 	}
 
-	public boolean losesNextTurn()
-	{
-		int i;
-		if(nextNode == null)
-		{
-			System.out.println("NULL");
-			return false;
-		}
-
-		if(nextNode.length == 0)
-		{
-			System.out.println("Length 0");
-			return false;
-		}
-
-		for(i=0;i<nextNode.length;i++)
-			if(nextNode[i].winner != Tile.Empty && nextNode[i].winner != Tile.Tie 
-				&& nextNode[i].winner != playerType )
-				return true;
-		return false;
-	}
-
 	public int indexOfMaxMove()
 	{
-		int max=-20000,i,index=-1;
+		double max=Double.NEGATIVE_INFINITY;
+		int i,index=-1;
 		Tile nextPlayer = Tile.Empty;
+
 		if(currentPlayer==Tile.X)
 		{
 			nextPlayer = Tile.O;
@@ -303,38 +281,22 @@ class TTTDecisionTree
 		{
 			System.out.println("ERROR");
 		}
+
 		for(i=0;i<nextNode.length;i++)
 		{
-
-			//System.out.println(nextNode[i].winner);
-			//System.out.println(currentPlayer);
-			if(nextNode[i].winLoss>max && nextNode[i].winner!=currentPlayer)//!nextNode[i].losesNextTurn())
+			//finds the node with the largest win/lose points
+			//as long as it is not a losing branch
+			if(nextNode[i].winLoss>max && nextNode[i].winner!=currentPlayer)
 			{
 				max = nextNode[i].winLoss;
 				index = i;
-				//System.out.println("Found winner");
-
 			}
 		}
 
+		if(i==-1)
+			System.out.println("ERROR FINDING INDEX");
+
 		return index;
-	}
-
-	public int maxMove()
-	{
-		int max=-20000,i,movexmax=-1000,moveymax=-1000;
-		for(i=0;i<nextNode.length;i++)
-			if(nextNode[i].winLoss>max)
-			{
-				max = nextNode[i].winLoss;
-				movexmax = nextNode[i].movex;
-				moveymax = nextNode[i].movey;
-
-			}
-
-			//System.out.println("max x = "+movexmax);
-			//System.out.println("max y = "+moveymax);
-		return max;
 	}
 
 	public int findIndexOfMove(int x, int y, Tile player)
@@ -343,14 +305,13 @@ class TTTDecisionTree
 		for(i=0;i<nextNode.length;i++)
 			if(nextNode[i].currentPlayer == player && nextNode[i].movex == x && nextNode[i].movey == y)
 				return i;
-		//System.out.println("Nothing");
-		//System.out.println(nextNode.length);
+		System.out.println("Error finding move");
 		return -1;
 	}
 
 	public TTTDecisionTree(TickTackToe game, Tile player)
 	{
-		new TTTDecisionTree(game, player,0,0, player);
+		this(game, player,0,0, player);
 	}
 
 	public TTTDecisionTree(TickTackToe game, Tile player,int movex, int movey, Tile opponetType)
