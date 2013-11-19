@@ -133,6 +133,7 @@ class TickTackToe
 			for(j=0;j<3;j++)
 				tiles[i][j] = Tile.Empty;
 	}
+	
 	public TickTackToe copy()
 	{
 		TickTackToe returner = new TickTackToe();
@@ -319,6 +320,91 @@ class TTTDecisionTree
 	//the possible moves
 	private TTTDecisionTree nextNode[];
 
+	public TTTDecisionTree(Tile playerType)
+	{
+		this(new TickTackToe(), playerType,0,0, playerType);
+	}
+
+	public TTTDecisionTree(TickTackToe game, Tile player)
+	{
+		this(game, player,0,0, player);
+	}
+
+	public TTTDecisionTree(TickTackToe game, Tile player,int movex, int movey, Tile opponetType)
+	{
+		//initializes all object primatives
+		this.aiType = opponetType;
+		this.game = game.copy();
+		currentPlayer = player;
+		this.movex = movex;
+		this.movey = movey;
+		numMoves = game.getNumMoves();
+
+		int i,j,indexOfNext = 0;
+		Tile nextPlayer;
+
+		//if there are no avalible tiles to move on
+		if(!game.outOfTiles())
+		{
+			winner =  game.Winner();
+
+			//no winner determined
+			if(Tile.Empty ==  winner)
+			{
+				nextNode = new TTTDecisionTree[9-numMoves];
+
+				nextPlayer = Tile.Empty;
+
+				if(player == Tile.X)
+				{
+					nextPlayer = Tile.O;
+				}
+				else if(player == Tile.O)
+				{
+					nextPlayer = Tile.X;
+				}
+				else
+				{
+					System.out.println("Error");
+				}
+
+				winLoss = 0;
+
+				for(i=0;i<3;i++)
+					for(j=0;j<3;j++)
+					{
+						//make all possible avalible moves
+						if(game.canMove(i,j))
+						{
+							game.makeMove(i,j,nextPlayer);
+							this.nextNode[indexOfNext] = new TTTDecisionTree(game,nextPlayer,i,j, opponetType);
+							
+							game.eraseMove(i,j);
+							winLoss+=this.nextNode[indexOfNext].winLoss;
+							
+							//if in this next move the opponet wins, 
+							//set the winner as the next player
+							if(this.nextNode[indexOfNext].winner==nextPlayer)
+								this.winner = nextPlayer;
+							
+							indexOfNext++;
+						}
+					}
+			}
+			//if a winner is determined, calculate the values for winloss
+			else
+			{
+				winLoss = factorial(9-numMoves)*winner.winVal;
+			}
+		}
+		//find the winner if no moves left
+		else
+		{
+			winner =  game.Winner();
+			winLoss = factorial(9-numMoves)*winner.winVal;
+		}
+	}
+
 	public TTTDecisionTree getNextMove(int x, int y, Tile player)
 	{
 		return this.nextNode[findIndexOfMove(x,y,player)];
@@ -362,6 +448,7 @@ class TTTDecisionTree
 		{
 			//finds the node with the largest win/lose points
 			//as long as it is not a losing branch
+			//System.out.println(nextNode[i].winLoss);
 			if(nextNode[i].winLoss>max && nextNode[i].winner!=currentPlayer)
 			{
 				max = nextNode[i].winLoss;
@@ -385,102 +472,7 @@ class TTTDecisionTree
 					return i;
 		System.out.println("Error finding move");
 		return -1;
-	}
-
-	public void printNextGame(int i)
-	{
-		TickTackToe printer = game.copy();
-		printer.makeMove(this.nextNode[i].movex,this.nextNode[i].movey,this.nextNode[i].currentPlayer);
-		System.out.println("Winner is " + this.nextNode[i].winner);
-		System.out.println("Winloss = " + this.nextNode[i].winLoss);
-		System.out.println(printer);
-	}
-
-	public TTTDecisionTree(Tile playerType)
-	{
-		this(new TickTackToe(), playerType,0,0, playerType);
-	}
-
-	public TTTDecisionTree(TickTackToe game, Tile player)
-	{
-		this(game, player,0,0, player);
-	}
-
-	public TTTDecisionTree(TickTackToe game, Tile player,int movex, int movey, Tile opponetType)
-	{
-		//initializes all object primatives
-		this.aiType = opponetType;
-		this.game = game.copy();
-		currentPlayer = player;
-		this.movex = movex;
-		this.movey = movey;
-		numMoves = game.getNumMoves();
-
-		int i,j,indexOfNext = 0;
-		Tile nextPlayer;
-		
-		if(!game.outOfTiles())
-		{
-			winner =  game.Winner();
-
-			if(Tile.Empty ==  winner)
-			{
-				nextNode = new TTTDecisionTree[9-numMoves];
-
-				nextPlayer = Tile.Empty;
-
-				if(player == Tile.X)
-				{
-					nextPlayer = Tile.O;
-				}
-				else if(player == Tile.O)
-				{
-					nextPlayer = Tile.X;
-				}
-				else
-				{
-					System.out.println("Error");
-				}
-
-				winLoss = 0;
-
-				for(i=0;i<3;i++)
-					for(j=0;j<3;j++)
-					{
-						if(game.canMove(i,j))
-						{
-							game.makeMove(i,j,nextPlayer);
-							this.nextNode[indexOfNext] = new TTTDecisionTree(game,nextPlayer,i,j, opponetType);
-							
-							game.eraseMove(i,j);
-							winLoss+=this.nextNode[indexOfNext].winLoss;
-							if(currentPlayer != aiType)
-							{
-								if(this.nextNode[indexOfNext].winner==nextPlayer)
-									this.winner = nextPlayer;
-								
-							}
-							else
-							{
-								if(this.nextNode[indexOfNext].winner==nextPlayer)
-									this.winner = nextPlayer;
-							}
-							indexOfNext++;
-						}
-					}
-			}
-			else
-			{
-				winner =  game.Winner();
-				winLoss = factorial(9-numMoves)*winner.winVal;
-			}
-		}
-		else
-		{
-			winner =  game.Winner();
-			winLoss = factorial(9-numMoves)*winner.winVal;
-		}
-	}
+	}	
 
 	private int factorial(int num)
 	{
