@@ -384,12 +384,22 @@ class TTTDecisionTree
 							
 							//if in this next move the opponet wins, 
 							//set the winner as the next player
-							if(this.nextNode[indexOfNext].winner==nextPlayer)
+							if(this.currentPlayer == aiType && 
+								this.nextNode[indexOfNext].winner==nextPlayer)
 								this.winner = nextPlayer;
 							
 							indexOfNext++;
 						}
 					}
+				int numLoses = 0;
+				if(this.currentPlayer != aiType)
+					for(i=0;i<this.nextNode.length;i++)
+					{
+						if(this.nextNode[i].winner == this.currentPlayer)
+							numLoses++;
+					}
+				if(numLoses == nextNode.length)
+					this.winner = this.currentPlayer;
 			}
 			//if a winner is determined, calculate the values for winloss
 			else
