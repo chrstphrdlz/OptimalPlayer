@@ -97,6 +97,7 @@ public class OptimalTickTackToe
 	}
 	public static void main(String [] args)
 	{
+		TTTDecisionTree.makeAllGames();
 		if(args.length!=1)
 		{
 			System.out.println("Valid command line arguments: \"X\" or \"O\"");
@@ -133,6 +134,35 @@ class TickTackToe
 			for(j=0;j<3;j++)
 				tiles[i][j] = Tile.Empty;
 	}
+
+	public TickTackToe(int possibleGame)
+	{
+		numMoves = 0;
+		tiles = new Tile[3][3];
+		int i,j;
+		for(i=0;i<3;i++)
+			for(j=0;j<3;j++)
+				tiles[i][j] = Tile.Empty;
+
+		for(i=0;i<3;i++)
+			for(j=0;j<3;j++)
+			{
+				switch(possibleGame%3)
+				{
+					case 1:
+						tiles[i][j] = Tile.X;
+						break;
+					case 2:
+						tiles[i][j] = Tile.O;
+						break;
+					default:
+						break;
+				}
+
+
+				possibleGame/=3;
+			}	
+	}
 	
 	public TickTackToe copy()
 	{
@@ -145,6 +175,10 @@ class TickTackToe
 		return returner;
 	}
 
+	public Tile getTile(int i, int j)
+	{
+		return this.tiles[i][j];
+	}
 	public int getNumMoves()
 	{
 		return numMoves;
@@ -318,10 +352,27 @@ class TTTDecisionTree
 	//the tick tack toe game being referenced in this move
 	TickTackToe game;
 	//the possible moves
+	TTTDecisionTree dynamicArrrayOfTrees[];
 	private TTTDecisionTree nextNode[];
+	private static TickTackToe allPossibleGames[];
+	private static TTTDecisionTree allDecisionTrees[];
+
+	public static void makeAllGames()
+	{
+		int i; 
+		allPossibleGames = new TickTackToe[19683];
+		allDecisionTrees = new TTTDecisionTree[19683];
+		for(i=0;i<512;i++)
+		{
+			allDecisionTrees[i] = null;
+			allPossibleGames[i] = new TickTackToe(i);
+		}
+	}
 
 	public TTTDecisionTree(Tile playerType)
 	{
+		//fill array here and pass it
+		
 		this(new TickTackToe(), playerType,0,0, playerType);
 	}
 
@@ -376,9 +427,20 @@ class TTTDecisionTree
 						//make all possible avalible moves
 						if(game.canMove(i,j))
 						{
+							//conversion might be off
 							game.makeMove(i,j,nextPlayer);
-							this.nextNode[indexOfNext] = new TTTDecisionTree(game,nextPlayer,i,j, opponetType);
-							
+							//System.out.println(game);
+							int indexInStsticArray = findPlaceInAllPossibleGames(game);
+							//System.out.println(indexInStsticArray);
+							if(TTTDecisionTree.allDecisionTrees[indexInStsticArray]==null)
+							{
+								TTTDecisionTree.allDecisionTrees[indexInStsticArray] = new TTTDecisionTree(game,nextPlayer,i,j, opponetType);
+								this.nextNode[indexOfNext] = TTTDecisionTree.allDecisionTrees[indexInStsticArray];
+							}
+							else
+							{
+								this.nextNode[indexOfNext] = TTTDecisionTree.allDecisionTrees[indexInStsticArray];
+							}
 							game.eraseMove(i,j);
 							winLoss+=this.nextNode[indexOfNext].winLoss;
 							
@@ -389,6 +451,10 @@ class TTTDecisionTree
 								this.winner = nextPlayer;
 							
 							indexOfNext++;
+						}
+						else
+						{
+							//System.out.println("Cannot move to " + i + " and "+j);
 						}
 					}
 				int numLoses = 0;
@@ -475,11 +541,20 @@ class TTTDecisionTree
 	public int findIndexOfMove(int x, int y, Tile player)
 	{
 		int i;
+		TickTackToe tempGame = this.game.copy();
+		tempGame.makeMove(x,y,player);
+
 		for(i=0;i<nextNode.length;i++)
-			if(nextNode[i].currentPlayer == player && 
-				nextNode[i].movex == x && 
-				nextNode[i].movey == y)
-					return i;
+		{
+			TickTackToe possibleGame = nextNode[i].game;
+			//System.out.println("Start");
+			//System.out.println(possibleGame);
+			//System.out.println(tempGame+"\n\n\n\n\n\n\n\n");
+			if(findPlaceInAllPossibleGames(tempGame)==findPlaceInAllPossibleGames(possibleGame))
+			{
+				return i;				
+			}		
+		}
 		System.out.println("Error finding move");
 		return -1;
 	}	
@@ -494,5 +569,30 @@ class TTTDecisionTree
 	public boolean gameNotDone()
 	{
 		return this.game.Winner()==Tile.Empty;
+	}
+
+	private int findPlaceInAllPossibleGames(TickTackToe game)
+	{
+		int returner = 0;
+		int i, j;
+		for(i=0;i<3;i++)
+			for(j=0;j<3;j++)
+			{
+				int  place = (int)Math.pow(3,j+3*i);
+				switch(game.getTile(i,j))
+				{
+					case O:
+						returner+=place;
+						break;
+					case X:
+						returner+=2*place;
+						break;
+					default:
+						break;
+				}
+				//System.out.println(returner);
+				
+			}
+		return returner;
 	}
 }
