@@ -19,7 +19,7 @@ void printPermutations(int size, int origionalSize, char* word)
 		{
 			printf("%c ", printer[i]);
 		}
-		printf("\nyes\n");
+		printf("\n");//yes\n");
 		return;
 	}
 	char temp;

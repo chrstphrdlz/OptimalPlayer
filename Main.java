@@ -9,7 +9,8 @@ public class Main
 		int x,y,cliInput;
 		String playAgain;
 		boolean successfulMove;
-		while(true)
+		boolean keepLooping = true;
+		while(keepLooping)
 		{
 			while(true)
 			{
@@ -121,7 +122,7 @@ public class Main
 				playAgain = input.next();
 				if(!playAgain.equals("yes"))
 				{
-					return;	
+					doneLooping = true;
 				}
 				else
 				{
@@ -130,7 +131,7 @@ public class Main
 			}
 			else
 			{
-				break;		
+				doneLooping = true;		
 			}
 
 			if(!input.hasNextInt())
@@ -139,7 +140,7 @@ public class Main
 
 
 
-		System.out.println(ai);
+		System.out.println(scenareo);
 	}
 
 
