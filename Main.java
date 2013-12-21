@@ -3,47 +3,48 @@ public class Main
 {
 	public static void play(Tile aiPlayer, boolean cliTest)
 	{
-		int scenareo = 0;
+		int scenareo = 1;
 		Scanner input = new Scanner(System.in);	
 		EnemyPlayer ai = new EnemyPlayer(aiPlayer);
 		int x,y,cliInput;
 		String playAgain;
 		boolean successfulMove;
 		boolean keepLooping = true;
+
 		while(keepLooping)
 		{
-			while(true)
+			if(!cliTest)
+				System.out.println(ai);
+			
+			if(aiPlayer == Tile.X)
 			{
-				if(aiPlayer==Tile.X)
-				{
-					try
-					{
-						ai.makeOptimalMove();
-					}
-					
-					catch(Exception e)
-					{
-						System.out.println("Crashed on scenareo "+ scenareo);
-					}
-				}
-
-				try
-				{
-					if(ai.winner()!=Tile.Empty)
-					break;
-				}
-				
-				catch(Exception e)
-				{
-					System.out.println("Crashed on scenareo "+ scenareo);
-				}
+				ai.makeOptimalMove();
 
 				if(!cliTest)
 					System.out.println(ai);
 
+				if(ai.winner()!=Tile.Empty)
+				{
+					keepLooping = false;
+					break;
+				}
+
 				if(cliTest)
 				{
-
+					cliInput = input.nextInt();
+					x = cliInput/3;
+					y = cliInput%3;
+				}
+				else
+				{
+					x = input.nextInt();
+					y = input.nextInt();
+				}
+			}
+			else
+			{
+				if(cliTest)
+				{
 					cliInput = input.nextInt();
 					x = cliInput/3;
 					y = cliInput%3;
@@ -54,93 +55,35 @@ public class Main
 					y = input.nextInt();
 				}
 
-				successfulMove = ai.playerMakeMove(x,y);
-
-				while(!successfulMove)
-				{
-					if(!cliTest)
-						System.out.println("Cannot move there!");					
-					if(cliTest)
-					{
-						cliInput = input.nextInt();
-						x = cliInput/3;
-						y = cliInput%3;
-					}
-					else
-					{
-						x = input.nextInt();
-						y = input.nextInt();
-					}
-
-					successfulMove = ai.playerMakeMove(x,y);
-				}
-
-
 				if(!cliTest)
 					System.out.println(ai);
 
 				if(ai.winner()!=Tile.Empty)
-					break;
-				if(aiPlayer!=Tile.X)
 				{
-					try
-					{
-						ai.makeOptimalMove();
-					}
-					
-					catch(Exception e)
-					{
-						System.out.println("Crashed on scenareo "+ scenareo);
-					}
-				}
-				try
-				{
-					if(ai.winner()!=Tile.Empty)
+					keepLooping = false;
 					break;
 				}
-				
-				catch(Exception e)
-				{
-					System.out.println("Crashed on scenareo "+ scenareo);
-				}
+
+				ai.makeOptimalMove();
 			}
 
-			if(ai.winner()!=Tile.Tie && ai.winner()!=aiPlayer)
+			if(ai.winner()!=Tile.Empty)
+				keepLooping = false;
+
+			else if(ai.winner() != aiPlayer && ai.winner() != Tile.Tie && ai.winner() != Tile.Empty)
 			{
-				System.out.println("lose with scenareo "+ scenareo);
-			}
-			else if(ai.winner() == aiPlayer)
-			{
-				//System.out.println("Winner");
+				if(cliTest)
+					System.out.println("Failed on scenareo " + scenareo + " "+ai.winner());
 			}
 
 			scenareo++;
 
-			if(cliTest)
-			{
-				playAgain = input.nextLine();
-				playAgain = input.next();
-				if(!playAgain.equals("yes"))
-				{
-					doneLooping = true;
-				}
-				else
-				{
-					ai.reset();
-				}					
-			}
-			else
-			{
-				doneLooping = true;		
-			}
 
-			if(!input.hasNextInt())
-				break;
+		
 		}
 
-
-
-		System.out.println(scenareo);
+		if(!cliTest)
+			System.out.println(ai);
 	}
 
 
