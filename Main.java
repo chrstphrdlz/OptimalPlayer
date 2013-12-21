@@ -11,21 +11,49 @@ public class Main
 		boolean successfulMove;
 		while(true)
 		{
+			
+			if(!input.hasNextLine())
+				break;
+
 			while(true)
 			{
+				if(!input.hasNextLine())
+				break;
+
 				if(aiPlayer==Tile.X)
 				{
-					ai.makeOptimalMove();
+					try
+					{
+						ai.makeOptimalMove();
+					}
+					
+					catch(Exception e)
+					{
+						System.out.println("Crashed on scenareo "+ scenareo);
+					}
 				}
 
-				if(ai.winner()!=Tile.Empty)
+				try
+				{
+					if(ai.winner()!=Tile.Empty)
 					break;
+				}
+				
+				catch(Exception e)
+				{
+					System.out.println("Crashed on scenareo "+ scenareo);
+				}
 
 				if(!cliTest)
 					System.out.println(ai);
 
+
+				if(!input.hasNextLine())
+				break;
+			
 				if(cliTest)
 				{
+
 					cliInput = input.nextInt();
 					x = cliInput/3;
 					y = cliInput%3;
@@ -65,15 +93,35 @@ public class Main
 					break;
 				if(aiPlayer!=Tile.X)
 				{
-					ai.makeOptimalMove();
+					try
+					{
+						ai.makeOptimalMove();
+					}
+					
+					catch(Exception e)
+					{
+						System.out.println("Crashed on scenareo "+ scenareo);
+					}
 				}
-				if(ai.winner()!=Tile.Empty)
+				try
+				{
+					if(ai.winner()!=Tile.Empty)
 					break;
+				}
+				
+				catch(Exception e)
+				{
+					System.out.println("Crashed on scenareo "+ scenareo);
+				}
 			}
 
 			if(ai.winner()!=Tile.Tie && ai.winner()!=aiPlayer)
 			{
 				System.out.println("lose with scenareo "+ scenareo);
+			}
+			else if(ai.winner() == aiPlayer)
+			{
+				//System.out.println("Winner");
 			}
 
 			scenareo++;

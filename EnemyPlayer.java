@@ -175,6 +175,7 @@ class EnemyPlayer
 
 	public boolean playerMakeMove(int x, int y)
 	{
+		//System.out.println("Moving "+x+" to x and "+y+" to y");
 		return makeMove(x, y, userType);
 	}
 
@@ -225,7 +226,7 @@ class EnemyPlayer
 
 		DecisionTreeNode moveToCheck = possibleMoves[0];
 
-		int max = moveToCheck.winLoss;
+		int max = -100000000;
 
 		int maxIndex = -1;//moveToCheck.game.findPlaceInAllPossibleGames();
 
@@ -233,7 +234,11 @@ class EnemyPlayer
 		{
 			moveToCheck = possibleMoves[i];
 
-			if(moveToCheck.winner == aiType)
+			if(moveToCheck.winner == userType)
+			{
+
+			}
+			else if(moveToCheck.winner == aiType)
 			{
 				maxIndex = moveToCheck.game.findPlaceInAllPossibleGames();
 
@@ -253,7 +258,7 @@ class EnemyPlayer
 		}
 
 		this.currentIndex = maxIndex;
-		System.out.println(allPossibleNodes[currentIndex].winner);
+		//System.out.println(allPossibleNodes[currentIndex].winner);
 	}
 
 	// will return true if the move is valid
@@ -272,7 +277,7 @@ class EnemyPlayer
 		// the next game state has this index accociated with it
 		int nextNodeIndex = currentGame.findPlaceInAllPossibleGames();
 
-		System.out.println("\n\n"+currentGame.Winner());
+		//System.out.println("\n\n"+currentGame.Winner());
 
 		// because the games are passed by reference, must revert to origional state
 		currentGame.eraseMove(x,y);
