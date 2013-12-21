@@ -18,8 +18,14 @@ public class Main
 			
 			if(aiPlayer == Tile.X)
 			{
-				ai.makeOptimalMove();
-
+				try
+				{
+					ai.makeOptimalMove();
+				}
+				catch(Exception e)
+				{
+					System.out.println("Error in scenareo " + scenareo);
+				}
 				if(!cliTest)
 					System.out.println(ai);
 
@@ -29,32 +35,41 @@ public class Main
 					break;
 				}
 
-				if(cliTest)
+				do
 				{
-					cliInput = input.nextInt();
-					x = cliInput/3;
-					y = cliInput%3;
+					if(cliTest)
+					{
+						cliInput = input.nextInt();
+						x = cliInput/3;
+						y = cliInput%3;
+					}
+					else
+					{
+						x = input.nextInt();
+						y = input.nextInt();
+					}
 				}
-				else
-				{
-					x = input.nextInt();
-					y = input.nextInt();
-				}
+				while(!ai.playerMakeMove(x,y));
+
 			}
 			else
 			{
-				if(cliTest)
+				do
 				{
-					cliInput = input.nextInt();
-					x = cliInput/3;
-					y = cliInput%3;
+					if(cliTest)
+					{
+						cliInput = input.nextInt();
+						x = cliInput/3;
+						y = cliInput%3;
+					}
+					else
+					{
+						x = input.nextInt();
+						y = input.nextInt();
+					}
 				}
-				else
-				{
-					x = input.nextInt();
-					y = input.nextInt();
-				}
-
+				while(!ai.playerMakeMove(x,y));
+				
 				if(!cliTest)
 					System.out.println(ai);
 
