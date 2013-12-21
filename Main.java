@@ -11,15 +11,8 @@ public class Main
 		boolean successfulMove;
 		while(true)
 		{
-			
-			if(!input.hasNextLine())
-				break;
-
 			while(true)
 			{
-				if(!input.hasNextLine())
-				break;
-
 				if(aiPlayer==Tile.X)
 				{
 					try
@@ -47,10 +40,6 @@ public class Main
 				if(!cliTest)
 					System.out.println(ai);
 
-
-				if(!input.hasNextLine())
-				break;
-			
 				if(cliTest)
 				{
 
@@ -143,6 +132,9 @@ public class Main
 			{
 				break;		
 			}
+
+			if(!input.hasNextInt())
+				break;
 		}
 
 
