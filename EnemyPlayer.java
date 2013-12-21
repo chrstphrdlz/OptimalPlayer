@@ -100,9 +100,10 @@ class EnemyPlayer
 							
 							//if in this next move the opponet wins, 
 							//set the winner as the next player
-							if(this.aiType == player && 
+							/*if(this.aiType == player && 
 								childNodes[indexOfNext].winner==nextPlayer)
 								allPossibleNodes[indexOfGame].winner = nextPlayer;
+							*/
 							
 							indexOfNext++;
 						}
@@ -113,15 +114,21 @@ class EnemyPlayer
 					}
 				int numLoses = 0;
 
-				if(player != aiType)
-					for(i=0;i<childNodes.length;i++)
-					{
-						if(childNodes[i].winner == player)
-							numLoses++;
+				for(i=0;i<childNodes.length;i++)
+				{
+					if(childNodes[i].winner == player)
+					{	
+						winner = player;
+						//System.out.println("sf");
+						break;
 					}
 
+					if(childNodes[i].winner == nextPlayer)
+						numLoses++;
+				}
+
 				if(numLoses == childNodes.length)
-					allPossibleNodes[indexOfGame].winner = player;
+					winner = nextPlayer;
 			}
 			//if a winner is determined, calculate the values for winloss
 			else
@@ -220,7 +227,7 @@ class EnemyPlayer
 
 		int max = moveToCheck.winLoss;
 
-		int maxIndex = moveToCheck.game.findPlaceInAllPossibleGames();
+		int maxIndex = -1;//moveToCheck.game.findPlaceInAllPossibleGames();
 
 		for(int i=0;i<possibleMoves.length;i++)
 		{
@@ -246,6 +253,7 @@ class EnemyPlayer
 		}
 
 		this.currentIndex = maxIndex;
+		System.out.println(allPossibleNodes[currentIndex].winner);
 	}
 
 	// will return true if the move is valid
@@ -263,6 +271,8 @@ class EnemyPlayer
 
 		// the next game state has this index accociated with it
 		int nextNodeIndex = currentGame.findPlaceInAllPossibleGames();
+
+		System.out.println("\n\n"+currentGame.Winner());
 
 		// because the games are passed by reference, must revert to origional state
 		currentGame.eraseMove(x,y);

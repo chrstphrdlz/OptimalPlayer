@@ -114,7 +114,7 @@ public class Main
 
 		boolean cliTest = false;
 
-		if(args.length>1 && args[1].equals("c"))
+		if(args.length>1 && args[1].equals("-c"))
 		{
 			cliTest = true;
 		}

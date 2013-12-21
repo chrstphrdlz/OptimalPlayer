@@ -16,6 +16,7 @@ class DecisionTreeNode
 	{
 		//initializes all object primatives
 		this.game = game.copy();
+		this.winner = game.Winner();
 		this.currentPlayer = player;
 		this.numMoves = game.getNumMoves();
 
