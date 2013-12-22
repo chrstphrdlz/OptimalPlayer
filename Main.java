@@ -9,7 +9,7 @@ public class Main
 		int x,y,cliInput;
 		String playAgain;
 		boolean successfulMove;
-		boolean keepLooping = true;
+		boolean keepLooping = true, impossibleMove;
 
 		while(keepLooping)
 		{
@@ -37,6 +37,8 @@ public class Main
 
 				do
 				{
+					impossibleMove = false;
+
 					if(cliTest)
 					{
 						cliInput = input.nextInt();
@@ -48,14 +50,24 @@ public class Main
 						x = input.nextInt();
 						y = input.nextInt();
 					}
+
+					if(!ai.playerMakeMove(x,y))
+					{
+						impossibleMove=true;
+
+						if(!cliTest)
+							System.out.println("Cannot move there!");
+					}
 				}
-				while(!ai.playerMakeMove(x,y));
+				while(impossibleMove);
 
 			}
 			else
 			{
 				do
 				{
+					impossibleMove=false;
+
 					if(cliTest)
 					{
 						cliInput = input.nextInt();
@@ -67,9 +79,17 @@ public class Main
 						x = input.nextInt();
 						y = input.nextInt();
 					}
+
+					if(!ai.playerMakeMove(x,y))
+					{
+						impossibleMove=true;
+
+						if(!cliTest)
+							System.out.println("Cannot move there!");
+					}
 				}
-				while(!ai.playerMakeMove(x,y));
-				
+				while(impossibleMove);
+
 				if(!cliTest)
 					System.out.println(ai);
 

@@ -230,6 +230,8 @@ class EnemyPlayer
 
 		int maxIndex = -1;//moveToCheck.game.findPlaceInAllPossibleGames();
 
+		boolean hasWinner = false;
+
 		for(int i=0;i<possibleMoves.length;i++)
 		{
 			moveToCheck = possibleMoves[i];
@@ -240,16 +242,29 @@ class EnemyPlayer
 			}
 			else if(moveToCheck.winner == aiType)
 			{
-				maxIndex = moveToCheck.game.findPlaceInAllPossibleGames();
+				System.out.println("Winner is " + moveToCheck.game);
+				if(hasWinner)
+				{
+					if(moveToCheck.winLoss > max)
+					{
+						maxIndex = moveToCheck.game.findPlaceInAllPossibleGames();
 
-				max = moveToCheck.winLoss;
+						max = moveToCheck.winLoss;
+					}
+				}	
+				else
+				{
+					maxIndex = moveToCheck.game.findPlaceInAllPossibleGames();
 
-				break;
+					max = moveToCheck.winLoss;
+				}
+
 			}
 			else
 			{
-				if(moveToCheck.winLoss >= max)
+				if(!hasWinner && moveToCheck.winLoss >= max)
 				{
+					System.out.println("Winning is " + moveToCheck.game);
 					maxIndex = moveToCheck.game.findPlaceInAllPossibleGames();
 
 					max = moveToCheck.winLoss;
@@ -258,6 +273,12 @@ class EnemyPlayer
 		}
 
 		this.currentIndex = maxIndex;
+
+		if(this.currentIndex == -1)
+		{
+			this.allPossibleNodes[0] = this.allPossibleNodes[-1];
+		}
+
 		//System.out.println(allPossibleNodes[currentIndex].winner);
 	}
 
