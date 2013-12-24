@@ -81,11 +81,10 @@ class EnemyPlayer
 						//make all possible avalible moves
 						if(game.canMove(i,j))
 						{
-							//conversion might be off
 							game.makeMove(i,j,player);
-							//System.out.println(game);
+
 							int indexInStsticArray = game.findPlaceInAllPossibleGames();
-							//System.out.println(indexInStsticArray);
+							
 							if(this.allPossibleNodes[indexInStsticArray]==null)
 							{
 								this.allPossibleNodes[indexInStsticArray] = makeTree(game,nextPlayer,numMoves+1);
@@ -109,7 +108,7 @@ class EnemyPlayer
 						}
 						else
 						{
-							//System.out.println("Cannot move to " + i + " and "+j);
+							
 						}
 					}
 				int numLoses = 0;
@@ -119,7 +118,6 @@ class EnemyPlayer
 					if(childNodes[i].winner == player)
 					{	
 						winner = player;
-						//System.out.println("sf");
 						break;
 					}
 
@@ -175,60 +173,18 @@ class EnemyPlayer
 
 	public boolean playerMakeMove(int x, int y)
 	{
-		//System.out.println("Moving "+x+" to x and "+y+" to y");
 		return makeMove(x, y, userType);
 	}
 
-	/*public void makeOptimalMove()
-	{
-		//This is right after the player moves,
-		//So the current player is the one we want to keep from winning
-		double max=Double.NEGATIVE_INFINITY;
-		int i,index=-1;
-		Tile nextPlayer = Tile.Empty;
-
-		if(this.allPossibleNodes[currentIndex].currentPlayer==Tile.X)
-		{
-			nextPlayer = Tile.O;
-		}
-		else if(this.allPossibleNodes[currentIndex].currentPlayer == Tile.O)
-		{
-			nextPlayer = Tile.X;
-		}
-		else
-		{
-			System.out.println("ERROR");
-		}
-
-		for(i=0;i<this.allPossibleNodes[currentIndex].nextNode.length;i++)
-		{
-			//finds the node with the largest win/lose points
-			//as long as it is not a losing branch
-			//System.out.println(nextNode[i].winLoss);
-			if(this.allPossibleNodes[currentIndex].nextNode[i].winLoss>=max && 
-				this.allPossibleNodes[currentIndex].nextNode[i].winner!=this.allPossibleNodes[currentIndex].currentPlayer)
-			{
-				max = this.allPossibleNodes[currentIndex].nextNode[i].winLoss;
-				index = i;
-			}
-		}
-
-		if(index==-1)
-			System.out.println("ERROR FINDING INDEX\n\n\n");
-
-		this.currentIndex = this.allPossibleNodes[currentIndex].nextNode[index].game.findPlaceInAllPossibleGames();
-	}*/
-
 	public void makeOptimalMove()
 	{
-		//System.out.println(currentIndex);
 		DecisionTreeNode possibleMoves[] = allPossibleNodes[currentIndex].nextNode;
 
 		DecisionTreeNode moveToCheck = possibleMoves[0];
 
 		int max = -100000000;
 
-		int maxIndex = -1;//moveToCheck.game.findPlaceInAllPossibleGames();
+		int maxIndex = -1;
 
 		boolean hasWinner = false;
 
@@ -242,7 +198,6 @@ class EnemyPlayer
 			}
 			else if(moveToCheck.winner == aiType)
 			{
-				System.out.println("Winner is " + moveToCheck.game);
 				if(hasWinner)
 				{
 					if(moveToCheck.winLoss > max)
@@ -257,6 +212,8 @@ class EnemyPlayer
 					maxIndex = moveToCheck.game.findPlaceInAllPossibleGames();
 
 					max = moveToCheck.winLoss;
+
+					hasWinner = true;
 				}
 
 			}
@@ -264,7 +221,6 @@ class EnemyPlayer
 			{
 				if(!hasWinner && moveToCheck.winLoss >= max)
 				{
-					System.out.println("Winning is " + moveToCheck.game);
 					maxIndex = moveToCheck.game.findPlaceInAllPossibleGames();
 
 					max = moveToCheck.winLoss;
@@ -278,8 +234,6 @@ class EnemyPlayer
 		{
 			this.allPossibleNodes[0] = this.allPossibleNodes[-1];
 		}
-
-		//System.out.println(allPossibleNodes[currentIndex].winner);
 	}
 
 	// will return true if the move is valid
@@ -291,14 +245,11 @@ class EnemyPlayer
 		// make the move associated with it
 		if(!currentGame.makeMove(x,y,player))
 		{
-			//System.out.println("HUGE ERROR");
 			return false;
 		}
 
 		// the next game state has this index accociated with it
 		int nextNodeIndex = currentGame.findPlaceInAllPossibleGames();
-
-		//System.out.println("\n\n"+currentGame.Winner());
 
 		// because the games are passed by reference, must revert to origional state
 		currentGame.eraseMove(x,y);
