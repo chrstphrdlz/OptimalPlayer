@@ -1,11 +1,14 @@
+
 class EnemyPlayer
 {
 	Tile aiType;
 
 	Tile userType;
 
+	//the array representing all the possible decision tree nodes
 	DecisionTreeNode allPossibleNodes[];
 
+	//the index in allPossibleNodes which matches the state of the current game
 	int currentIndex;
 
 	EnemyPlayer(Tile aiType)
@@ -31,15 +34,15 @@ class EnemyPlayer
 		{
 			System.out.println("Error making ai");
 		}
-
+		//a maximum of 3^9 different boards (not all will be used)
 		allPossibleNodes = new DecisionTreeNode[19683];
 		for(int i=0;i<19683;i++)
 			allPossibleNodes[i] = null;
-		//winLossOfNodes = new int[19683];
 
+		//initialize an empty board
 		TickTacToe game = new TickTacToe();
-
-		// because X is making the first move 
+		//start creating the possible combinations
+		//because X is making the first move player is X
 		allPossibleNodes[0] = makeTree(game, Tile.X,0);
 	}
 
@@ -47,6 +50,7 @@ class EnemyPlayer
 	{
 		int indexOfGame = game.findPlaceInAllPossibleGames();
 		
+		//if it is null, create a new node at this location
 		if(allPossibleNodes[indexOfGame] == null)
 			allPossibleNodes[indexOfGame] = new DecisionTreeNode(game, player);
 		
@@ -62,7 +66,7 @@ class EnemyPlayer
 		int i,j,indexOfNext = 0, winLoss;
 
 		Tile winner;
-
+		//the possible decisions that can be made at this state in the game
 		DecisionTreeNode childNodes[] = new DecisionTreeNode[9-numMoves];
 
 		//if there are no avalible tiles to move on
@@ -83,32 +87,25 @@ class EnemyPlayer
 						{
 							game.makeMove(i,j,player);
 
-							int indexInStsticArray = game.findPlaceInAllPossibleGames();
+							//represents the place in allPossibleNodes for the game with this move
+							int indexInStaticArray = game.findPlaceInAllPossibleGames();
 							
-							if(this.allPossibleNodes[indexInStsticArray]==null)
+							//if it is null, make the tree for this game and set it as a child node
+							//this prevents needing to re-compute already done nodes
+							if(this.allPossibleNodes[indexInStaticArray]==null)
 							{
-								this.allPossibleNodes[indexInStsticArray] = makeTree(game,nextPlayer,numMoves+1);
-								childNodes[indexOfNext] = this.allPossibleNodes[indexInStsticArray];
+								this.allPossibleNodes[indexInStaticArray] = makeTree(game,nextPlayer,numMoves+1);
+								childNodes[indexOfNext] = this.allPossibleNodes[indexInStaticArray];
 							}
+							//if already made, set it as a child node
 							else
 							{
-								childNodes[indexOfNext] = this.allPossibleNodes[indexInStsticArray];
+								childNodes[indexOfNext] = this.allPossibleNodes[indexInStaticArray];
 							}
+							//revert board, add winloss, and increment childNode index
 							game.eraseMove(i,j);
-							winLoss+=childNodes[indexOfNext].winLoss;
-							
-							//if in this next move the opponet wins, 
-							//set the winner as the next player
-							/*if(this.aiType == player && 
-								childNodes[indexOfNext].winner==nextPlayer)
-								allPossibleNodes[indexOfGame].winner = nextPlayer;
-							*/
-							
+							winLoss+=childNodes[indexOfNext].winLoss;							
 							indexOfNext++;
-						}
-						else
-						{
-							
 						}
 					}
 				int numLoses = 0;

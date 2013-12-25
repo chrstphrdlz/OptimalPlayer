@@ -1,30 +1,37 @@
 import java.util.Scanner;
 public class Main
 {
-	public static void play(Tile aiPlayer, boolean cliTest)
+	public static void play(Tile aiPlayer, boolean testMode)
 	{
 		Scanner input = new Scanner(System.in);	
 		EnemyPlayer ai = new EnemyPlayer(aiPlayer);
-		int x,y,cliInput,numReads = 0, numScenareosRan = 0;
-		boolean successfulMove;
-		boolean stillPlaying = true, impossibleMove, playAnotherGame = true;
+		int x,y,cliInput,
+			numReads = 0, numScenareosRan = 0, failedScenareos = 0, numWins = 0, numTies = 0;
+		boolean stillPlaying = true, unsucessfulMove, playAnotherGame = true;	
 		while(playAnotherGame)
 		{
-			if(cliTest && !input.hasNextInt())
+			//exit if there is no more input
+			if(testMode && !input.hasNextInt())
+			{
 				break;
+			}
 
 			while(stillPlaying)
 			{
-				if(!cliTest)
+				//only print game if not in test mode
+				if(!testMode)
 					System.out.println(ai);
 				
+				//make x go first
 				if(aiPlayer == Tile.X)
 				{
 					ai.makeOptimalMove();
-					
-					if(!cliTest)
+
+					//print the resulting game if not in test mode
+					if(!testMode)
 						System.out.println(ai);
 
+					//if there is a valid winner, stop
 					if(ai.winner()!=Tile.Empty)
 					{
 						stillPlaying = false;
@@ -33,9 +40,11 @@ public class Main
 
 					do
 					{
-						impossibleMove = false;
+						unsucessfulMove = false;
 
-						if(cliTest)
+						//in test mode, a single number (0-9) 
+						//represents a tile
+						if(testMode)
 						{
 							numReads++;
 							cliInput = input.nextInt();
@@ -50,22 +59,25 @@ public class Main
 
 						if(!ai.playerMakeMove(x,y))
 						{
-							impossibleMove=true;
+							unsucessfulMove=true;
 
-							if(!cliTest)
+							if(!testMode)
 								System.out.println("Cannot move there!");
 						}
 					}
-					while(impossibleMove);
+					//keep looping if it is not a sucessful move
+					while(unsucessfulMove);
 
 				}
 				else
 				{
 					do
 					{
-						impossibleMove=false;
+						unsucessfulMove=false;
 
-						if(cliTest)
+						//in test mode, a single number (0-9) 
+						//represents a tile
+						if(testMode)
 						{
 							numReads++;
 							cliInput = input.nextInt();
@@ -80,15 +92,17 @@ public class Main
 
 						if(!ai.playerMakeMove(x,y))
 						{
-							impossibleMove=true;
+							unsucessfulMove=true;
 
-							if(!cliTest)
+							if(!testMode)
 								System.out.println("Cannot move there!");
 						}
 					}
-					while(impossibleMove);
+					//keep looping for unsucessful move
+					while(unsucessfulMove);
 
-					if(!cliTest)
+					//print the resulting game if not in test mode
+					if(!testMode)
 						System.out.println(ai);
 
 					if(ai.winner()!=Tile.Empty)
@@ -96,38 +110,61 @@ public class Main
 						stillPlaying = false;
 						break;
 					}
-					try{
-					ai.makeOptimalMove();}
-					catch(Exception e)
-					{
-						System.out.println(numScenareosRan);
-						System.out.println("Moved to " +x +" "+y);
-					}
-				}
 
-				if(ai.winner()!=Tile.Empty)
-					stillPlaying = false;
+					ai.makeOptimalMove();
+				}				
+			}
 
+			Tile winner = ai.winner();
 
-				else if(ai.winner() != aiPlayer && ai.winner() != Tile.Tie && ai.winner() != Tile.Empty)
-				{
-					if(cliTest)
-						System.out.println("Failed on scenareo " + numScenareosRan + " "+ai.winner());
-				}		
+			//not playing anymore if there is a winner		
+			stillPlaying = false;
+
+			//the winner is the ai type
+			if(winner == aiPlayer)
+			{
+				numWins++;
+			}
+			//the result is a tie
+			else if(winner == Tile.Tie)
+			{
+				numTies++;
+			}
+			//the winner is the opposing player
+			else
+			{
+				failedScenareos++;
+
+				if(testMode)
+					System.out.println("Failed on scenareo " + numScenareosRan + " "+ai.winner());
 			}
 
 			//will read in the rest of the permutaion and reset numReads
-			if(cliTest && numReads < 9)
+			if(testMode && numReads < 9)
 				input.nextLine();
 
-			numReads = 0;
-			ai.reset();
-			stillPlaying = true;
-			numScenareosRan++;
+			//reset if we are doing a test
+			if(testMode)
+			{
+				stillPlaying = true;
+				numReads = 0;
+				ai.reset();
+				numScenareosRan++;
+			}
+			//if not, we are done
+			else
+			{
+				playAnotherGame = false;
+			}
 		}
 
-		if(cliTest)
-			System.out.println(numScenareosRan + " scenareos ran");
+		//print test results
+		if(testMode)
+			System.out.println(numScenareosRan + " scenareos ran " 
+				+ failedScenareos + " scenareos failed " 
+				+ numWins + " scenareos won " 
+				+ numTies + " scenareos tied");
+		//print final game
 		else
 			System.out.println(ai);
 	}
@@ -135,31 +172,32 @@ public class Main
 
 	public static void main(String [] args)
 	{
+		boolean testMode = false;
 
-		if(args.length<1)
+		if(args.length < 1 || args[0].equals("-help"))
 		{
-			System.out.println("Valid command line arguments: \"X\" or \"O\"");
+			System.out.println("usage: Main {X|O} [-test] ");
 			return;
 		}
 
-		boolean cliTest = false;
-
-		if(args.length>1 && args[1].equals("-c"))
+		if(args.length>1 && args[1].equals("-test"))
 		{
-			cliTest = true;
+			testMode = true;
 		}
+
+
 
 		if(args[0].equals("X"))
 		{
-			play(Tile.O, cliTest);
+			play(Tile.O, testMode);
 		}
 		else if(args[0].equals("O"))
 		{			
-			play(Tile.X, cliTest);
+			play(Tile.X, testMode);
 		}
 		else
 		{
-			System.out.println("Valid command line arguments: \"X\" or \"O\"");
+			System.out.println("usage: Main {X|O} [-test] ");
 		}
 	}
 }
