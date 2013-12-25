@@ -3,32 +3,25 @@ public class Main
 {
 	public static void play(Tile aiPlayer, boolean cliTest)
 	{
-		int scenareo = 0;
 		Scanner input = new Scanner(System.in);	
 		EnemyPlayer ai = new EnemyPlayer(aiPlayer);
-		int x,y,cliInput,numReads=0;
-		String playAgain;
+		int x,y,cliInput,numReads = 0, numScenareosRan = 0;
 		boolean successfulMove;
 		boolean stillPlaying = true, impossibleMove, playAnotherGame = true;
-		while(input.hasNextInt() && playAnotherGame)
+		while(playAnotherGame)
 		{
-			//System.out.println("a");
+			if(cliTest && !input.hasNextInt())
+				break;
+
 			while(stillPlaying)
 			{
-				//System.out.println("b");
 				if(!cliTest)
 					System.out.println(ai);
 				
 				if(aiPlayer == Tile.X)
 				{
-					try
-					{
-						ai.makeOptimalMove();
-					}
-					catch(Exception e)
-					{
-						System.out.println("Error in scenareo " + scenareo);
-					}
+					ai.makeOptimalMove();
+					
 					if(!cliTest)
 						System.out.println(ai);
 
@@ -107,7 +100,7 @@ public class Main
 					ai.makeOptimalMove();}
 					catch(Exception e)
 					{
-						System.out.println(scenareo);
+						System.out.println(numScenareosRan);
 						System.out.println("Moved to " +x +" "+y);
 					}
 				}
@@ -119,27 +112,24 @@ public class Main
 				else if(ai.winner() != aiPlayer && ai.winner() != Tile.Tie && ai.winner() != Tile.Empty)
 				{
 					if(cliTest)
-						System.out.println("Failed on scenareo " + scenareo + " "+ai.winner());
+						System.out.println("Failed on scenareo " + numScenareosRan + " "+ai.winner());
 				}		
 			}
 
+			//will read in the rest of the permutaion and reset numReads
 			if(cliTest && numReads < 9)
 				input.nextLine();
 
 			numReads = 0;
-
 			ai.reset();
-
 			stillPlaying = true;
-
-			scenareo++;
+			numScenareosRan++;
 		}
 
-		if(!cliTest)
-			System.out.println(ai);
-
 		if(cliTest)
-			System.out.println(scenareo + " scenareos ran");
+			System.out.println(numScenareosRan + " scenareos ran");
+		else
+			System.out.println(ai);
 	}
 
 
