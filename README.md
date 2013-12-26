@@ -10,6 +10,9 @@ The Tiles are numbered:
 		<tb>0</tb>
 		<tb>1</tb>
 	</tr>
+	<tr>
+		<tb>3</tb>
+	</tr>
 <table>
 
 and the input is as follows:
