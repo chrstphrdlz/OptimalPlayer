@@ -2,7 +2,6 @@
 class EnemyPlayer
 {
 	Tile aiType;
-
 	Tile userType;
 
 	//the array representing all the possible decision tree nodes
