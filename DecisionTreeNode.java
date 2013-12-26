@@ -37,5 +37,4 @@ class DecisionTreeNode
 	{
 		return this.game.copy();
 	}
-
 }

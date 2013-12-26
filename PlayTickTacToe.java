@@ -1,5 +1,5 @@
 import java.util.Scanner;
-public class Main
+public class PlayTickTacToe
 {
 	public static void play(Tile aiPlayer, boolean testMode)
 	{
@@ -189,7 +189,7 @@ public class Main
 
 		if(args.length < 1 || args[0].equals("-help"))
 		{
-			System.out.println("usage: Main {X|O} [-test] ");
+			System.out.println("usage: PlayTickTacToe {X|O} [-test] ");
 			return;
 		}
 
@@ -197,7 +197,6 @@ public class Main
 		{
 			testMode = true;
 		}
-
 
 
 		if(args[0].equals("X"))
@@ -210,7 +209,7 @@ public class Main
 		}
 		else
 		{
-			System.out.println("usage: Main {X|O} [-test] ");
+			System.out.println("usage: PlayTickTacToe {X|O} [-test] ");
 		}
 	}
 }
