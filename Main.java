@@ -68,6 +68,13 @@ public class Main
 					//keep looping if it is not a sucessful move
 					while(unsucessfulMove);
 
+					//if there is a valid winner, stop
+					if(ai.winner()!=Tile.Empty)
+					{
+						stillPlaying = false;
+						break;
+					}
+
 				}
 				else
 				{
@@ -112,6 +119,12 @@ public class Main
 					}
 
 					ai.makeOptimalMove();
+
+					if(ai.winner()!=Tile.Empty)
+					{
+						stillPlaying = false;
+						break;
+					}
 				}				
 			}
 

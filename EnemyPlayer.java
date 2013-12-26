@@ -108,10 +108,13 @@ class EnemyPlayer
 							indexOfNext++;
 						}
 					}
+
 				int numLoses = 0;
 
 				for(i=0;i<childNodes.length;i++)
 				{
+					//if there is a possible winning move for the current player
+					//then the winner is the current player
 					if(childNodes[i].winner == player)
 					{	
 						winner = player;
@@ -122,10 +125,14 @@ class EnemyPlayer
 						numLoses++;
 				}
 
+				//if all the child nodes are loses, this node's winner is the
+				//next player (there is no oppourtunity at that point to not lose)
 				if(numLoses == childNodes.length)
 					winner = nextPlayer;
 			}
 			//if a winner is determined, calculate the values for winloss
+			//the factorial is because a win higher up the tree should be considered
+			//winning for all the nonexistant nodes below it
 			else
 			{
 				winLoss = factorial(9-numMoves)*winner.winVal;
@@ -138,6 +145,7 @@ class EnemyPlayer
 			winLoss = factorial(9-numMoves)*winner.winVal;
 		}
 
+		//sets all the values of this current node
 		this.allPossibleNodes[indexOfGame].winner = winner;
 		allPossibleNodes[indexOfGame].winLoss = winLoss;
 		allPossibleNodes[indexOfGame].nextNode = childNodes;
@@ -145,6 +153,7 @@ class EnemyPlayer
 		return allPossibleNodes[indexOfGame];
 	}
 
+	//used only for finding winloss
 	int factorial(int i)
 	{
 		if(i<0)
@@ -176,13 +185,9 @@ class EnemyPlayer
 	public void makeOptimalMove()
 	{
 		DecisionTreeNode possibleMoves[] = allPossibleNodes[currentIndex].nextNode;
-
 		DecisionTreeNode moveToCheck = possibleMoves[0];
-
 		int max = -100000000;
-
 		int maxIndex = -1;
-
 		boolean hasWinner = false;
 
 		for(int i=0;i<possibleMoves.length;i++)
@@ -199,14 +204,14 @@ class EnemyPlayer
 				{
 					if(moveToCheck.winLoss > max)
 					{
-						maxIndex = moveToCheck.game.findPlaceInAllPossibleGames();
+						maxIndex = moveToCheck.getNodeIndex();
 
 						max = moveToCheck.winLoss;
 					}
 				}	
 				else
 				{
-					maxIndex = moveToCheck.game.findPlaceInAllPossibleGames();
+					maxIndex = moveToCheck.getNodeIndex();
 
 					max = moveToCheck.winLoss;
 
@@ -218,7 +223,7 @@ class EnemyPlayer
 			{
 				if(!hasWinner && moveToCheck.winLoss >= max)
 				{
-					maxIndex = moveToCheck.game.findPlaceInAllPossibleGames();
+					maxIndex = moveToCheck.getNodeIndex();
 
 					max = moveToCheck.winLoss;
 				}
@@ -226,10 +231,12 @@ class EnemyPlayer
 		}
 
 		this.currentIndex = maxIndex;
-
+		//will pourposely crash the program in debug mode
+		//(will only happen if there is no option but to lose)
 		if(this.currentIndex == -1)
 		{
-			this.allPossibleNodes[0] = this.allPossibleNodes[-1];
+			assert(false);
+			this.currentIndex = 0;
 		}
 	}
 
@@ -259,17 +266,17 @@ class EnemyPlayer
 
 	public TickTacToe getCurrentGame()
 	{
-		return this.allPossibleNodes[currentIndex].game;
+		return this.allPossibleNodes[currentIndex].getGame();
 	}
 
 	public String toString()
 	{
-		return this.allPossibleNodes[currentIndex].game.toString();
+		return this.allPossibleNodes[currentIndex].getGame().toString();
 	}
 
 	public Tile winner()
 	{
-		return this.allPossibleNodes[currentIndex].game.Winner();
+		return this.allPossibleNodes[currentIndex].getGame().Winner();
 	}
 
 	public void reset()
