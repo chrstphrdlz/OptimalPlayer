@@ -1,3 +1,4 @@
+//represents a tick tac toe game
 class TickTacToe
 {
 	private Tile tiles[][];
@@ -13,6 +14,9 @@ class TickTacToe
 				tiles[i][j] = Tile.Empty;
 	}
 
+	//generates a game by taking in the index that the game is associated with it
+	//the board can be converted to an int by considering each tile in board as a
+	//base 3 number (0 = empty, 1 = X, 2 = O)
 	public TickTacToe(int possibleGame)
 	{
 		numMoves = 0;
@@ -63,7 +67,8 @@ class TickTacToe
 			}
 		return returner;
 	}
-	
+
+	//create a new board and give it the same values	
 	public TickTacToe copy()
 	{
 		TickTacToe returner = new TickTacToe();
@@ -84,12 +89,13 @@ class TickTacToe
 		return numMoves;
 	}
 
+	//sees if the tile can be moved on
 	public boolean canMove(int x, int y)
 	{
 		return tiles[y][x]==Tile.Empty;
 	}
 
-	//Will return a winner, or nothing (no winner)
+	//all will return a winner, or nothing (no winner)
 	private Tile WinRow(int rowNum)
 	{
 		if(tiles[rowNum][0] == tiles[rowNum][1] && tiles[rowNum][0] == tiles[rowNum][2])
@@ -130,17 +136,8 @@ class TickTacToe
 		}
 	}
 
-	public String toString()
-	{
-		String returner = "";
-		returner+=tiles[0][0]+" | "+tiles[0][1]+" | "+tiles[0][2]+"\n";
-		returner+="---------"+"\n";
-		returner+=tiles[1][0]+" | "+tiles[1][1]+" | "+tiles[1][2]+"\n";
-		returner+="---------"+"\n";
-		returner+=tiles[2][0]+" | "+tiles[2][1]+" | "+tiles[2][2]+"\n";
-		return returner;
-	}
-
+	//finds the winner by checking if there are any 
+	//winning rows, columns, or diagonal winners
 	public Tile Winner()
 	{
 		int i;
@@ -165,6 +162,18 @@ class TickTacToe
 		if(returner == Tile.Empty && outOfTiles())
 			return Tile.Tie;
 
+		return returner;
+	}
+
+	//makes string representation of the board
+	public String toString()
+	{
+		String returner = "";
+		returner+=tiles[0][0]+" | "+tiles[0][1]+" | "+tiles[0][2]+"\n";
+		returner+="---------"+"\n";
+		returner+=tiles[1][0]+" | "+tiles[1][1]+" | "+tiles[1][2]+"\n";
+		returner+="---------"+"\n";
+		returner+=tiles[2][0]+" | "+tiles[2][1]+" | "+tiles[2][2]+"\n";
 		return returner;
 	}
 

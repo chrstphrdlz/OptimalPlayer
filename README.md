@@ -1,9 +1,9 @@
 OptimalPlayer
 =============
 
-Will play a Tick Tac Toe game that will never lose. It will choose the optimal move to play against the opponet.
+Will play a Tick Tac Toe game that will never lose. The AI will always choose the move which will maximize the amount of possible wins that can be made. It uses a decision tree structure that has been memoized in an array structure. This will make it so that games with the same board do not have to be re-calculated (for example moving to the top right then the bottom left is essentially the same as moving to the bottom left then the top right).
 
-The Tiles are numbered:
+The tiles are numbered as follows:
 
 <table>
 	<tr>
@@ -44,10 +44,9 @@ Type Y + Enter
 - [Tile](#tile) 
 - [PlayTickTacToe](#playticktactoe) 
 
-
-## Individual Files ##
 ## EnemyPlayer ##
 ## DecisionTreeNode ##
 ## TickTacToe ##
 ## Tile ##
+This tile enumeration represents one of the 9 squares in the Tick Tack Toe board. It also represents the types of winning (either a tile type: X, O, or nothing, or a tie). It has a toString method to allow each individual tile to print on the game board. The winVal associated with each tile is what is attempting to be maximized (if the ai is playing as X, we want to make X positive and O negative). For example, if we want to make X win, we call that method and it makes the X winVal 1 and O -1.
 ## PlayTickTacToe ##
