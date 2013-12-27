@@ -177,11 +177,13 @@ class TickTacToe
 		return returner;
 	}
 
+	//sees if there are any avalible tiles left
 	public boolean outOfTiles()
 	{
 		return numMoves == 9;
 	}
 
+	//allows a player to make a move
 	public boolean makeMove(int x, int y, Tile player)
 	{
 		if(tiles[y][x] != Tile.Empty)
@@ -197,6 +199,7 @@ class TickTacToe
 		}
 	}
 
+	//erases a given tile
 	public boolean eraseMove(int x, int y)
 	{
 		if(tiles[y][x] == Tile.Empty)
